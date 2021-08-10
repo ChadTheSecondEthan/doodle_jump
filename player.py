@@ -13,6 +13,7 @@ class Player(entity.Entity):
     vx: float
     vy: float
     ymin: float
+    score: int
 
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -39,6 +40,8 @@ class Player(entity.Entity):
 
         if self.y > game_loop.cam.y + 700:
             game_loop.lost = True
+
+        self.score = int(-self.ymin / 100) + 1
 
     def check_floor_collisions(self):
         for floor in game_loop.floors:
