@@ -5,23 +5,28 @@ from time import perf_counter
 import floor
 import variables
 from cam import Cam
-from floor import spawn_floor, Floor
+from floor import spawn_floor
 from player import Player
 
 background: pygame.Surface
 screen: pygame.display
+font: pygame.font.Font
 player: Player
 floors: []
 cam: Cam
 prev_time: float
+
 lose_text: pygame.Surface
 lose_text_pos: (float, float)
+
+score_text: pygame.Surface
+score_text_pos: (float, float)
 
 lost = False
 
 
 def start(s):
-    global background, screen, player, cam, floors, prev_time, lose_text, lose_text_pos
+    global background, screen, player, cam, floors, prev_time, lose_text, lose_text_pos, font
 
     screen = s
 
@@ -39,7 +44,9 @@ def start(s):
     for i in range(10):
         floors.append(floor.spawn_floor((0, variables.SCREEN_SIZE[0], 0, variables.SCREEN_SIZE[1])))
 
-    lose_text = pygame.font.SysFont("Sans Serif", 48, False, False).render("You lost", False, variables.WHITE)
+    font = pygame.font.SysFont("Sans Serif", 48, False, False)
+
+    lose_text = font.render("You lost", False, variables.WHITE)
     lose_text_pos = (variables.HALF_SCREEN_SIZE[0] - lose_text.get_size()[0] / 2, variables.HALF_SCREEN_SIZE[1] -
                      lose_text.get_size()[1] / 2)
 
@@ -47,6 +54,7 @@ def start(s):
 
 
 def update():
+    global score_text, score_text_pos
 
     background.fill(variables.BG_COLOR)
 
@@ -57,6 +65,10 @@ def update():
         update_lose()
     else:
         update_game()
+
+    score_text = font.render("Score: " + str(player.score), False, variables.WHITE)
+    score_text_pos = (variables.HALF_SCREEN_SIZE[0] - lose_text.get_size()[0] / 2, variables.HALF_SCREEN_SIZE[1] -
+                     lose_text.get_size()[1] / 2 + 200)
 
     screen.blit(background, (0, 0))
     pygame.display.flip()
@@ -79,6 +91,7 @@ def update_game():
     cam.draw(background, player)
     for _floor in floors:
         cam.draw(background, _floor)
+    background.blit(score_text, score_text_pos)
 
     prev_time = perf_counter()
 
@@ -91,7 +104,7 @@ def floors_in_range(y1, y2):
     y_min = min(y1, y2)
     y_max = max(y1, y2)
     floors_in = []
-    for floor in floors:
-        if y_min < floor.y < y_max:
-            floors_in.append(floor)
+    for _floor in floors:
+        if y_min < _floor.y < y_max:
+            floors_in.append(_floor)
     return floors_in
