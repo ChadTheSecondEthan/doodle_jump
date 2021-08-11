@@ -42,7 +42,7 @@ class Player(entity.Entity):
         if self.y > game_loop.cam.y + 700:
             game_loop.lost = True
 
-        self.score = int(self.ymin / 100)
+        self.score = int(-self.ymin / 100) + 1
 
     def check_floor_collisions(self):
         for floor in game_loop.floors:
