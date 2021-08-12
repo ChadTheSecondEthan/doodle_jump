@@ -44,7 +44,7 @@ def start(s):
     cam = Cam()
     floors = []
 
-    for i in range(10):
+    for i in range(20):
         floors.append(floor.spawn_floor((0, variables.SCREEN_SIZE[0], 0, variables.SCREEN_SIZE[1])))
     floors.append(floor.Floor((variables.SCREEN_SIZE[0] - floor.W) / 2, player.y + 100))
 
@@ -81,27 +81,24 @@ def update():
 
 
 def update_game():
-    global prev_time
+    global font, score_text, prev_time
 
     dt = perf_counter() - prev_time
 
     player.update(dt)
     for _floor in floors:
-        _floor.update()
+        _floor.update(dt)
     cam.update()
 
     floors_in = floors_in_range(cam.y, cam.y - 50)
     if len(floors_in) == 0:
-        floors.append(spawn_floor((0, variables.SCREEN_SIZE[0], cam.y, cam.y - 50)))
+        floors.append(spawn_floor((0, variables.SCREEN_SIZE[0], cam.y, cam.y - 50), _type=floor.random_floor_type()))
 
     cam.draw(background, player)
     for _floor in floors:
         cam.draw(background, _floor)
-    background.blit(score_text, (10, 10))
 
-    global font, score_text
     score_text = font.render("Score: " + str(player.score), False, variables.WHITE)
-
     background.blit(score_text, (10, 10))
 
     prev_time = perf_counter()
@@ -114,8 +111,31 @@ def update_lose():
     background.blit(lose_text, lose_text_pos)
     background.blit(replay_text, replay_text_pos)
 
-    # if pygame.key.get_pressed()[pygame.K_R]:
-    # start()
+    if pygame.key.get_pressed()[pygame.K_r]:
+        restart()
+
+
+def restart():
+    global cam, player, floors, lost, prev_time
+
+    lost = False
+
+    x, y = variables.SCREEN_SIZE
+    x = (x - 10) / 2
+    y = (y - 10) / 2
+    player = Player(x, y)
+
+    cam = Cam()
+    floors = []
+
+    for i in range(10):
+        floors.append(floor.spawn_floor((0, variables.SCREEN_SIZE[0], 0, variables.SCREEN_SIZE[1])))
+
+    bottom_floor_point = (variables.SCREEN_SIZE[0] - floor.W) / 2, player.y + 100
+    floors.append(floor.spawn_floor((bottom_floor_point[0], bottom_floor_point[0], bottom_floor_point[1],
+                                     bottom_floor_point[1])))
+
+    prev_time = perf_counter()
 
 
 def floors_in_range(y1, y2):

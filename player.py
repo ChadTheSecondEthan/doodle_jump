@@ -5,7 +5,7 @@ import game_loop
 from variables import G
 
 X_SPEED = 150
-Y_SPEED = 300
+Y_SPEED = 400
 FALL_DISTANCE = 300
 
 
@@ -47,7 +47,7 @@ class Player(entity.Entity):
     def check_floor_collisions(self):
         for floor in game_loop.floors:
             if self.bottom_intersects(floor):
-                self.vy = Y_SPEED
+                floor.player_bounce(self)
 
     def bottom_intersects(self, other):
         return self.x + self.w > other.x and self.x < other.x + other.w \

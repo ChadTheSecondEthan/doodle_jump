@@ -6,7 +6,6 @@ import game_loop
 
 
 def main():
-    # Initialise screen
     pygame.init()
     pygame.font.init()
 
