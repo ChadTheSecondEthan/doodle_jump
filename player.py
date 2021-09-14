@@ -40,7 +40,7 @@ class Player(entity.Entity):
             self.vx = 0
 
         if self.y > game_loop.cam.y + 700:
-            game_loop.lost = True
+            game_loop.lose()
 
         self.score = int(-self.ymin / 100) + 1
 

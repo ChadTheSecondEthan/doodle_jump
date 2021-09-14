@@ -12,11 +12,6 @@ def main():
     screen = pygame.display.set_mode(variables.SCREEN_SIZE)
     pygame.display.set_caption('Basic Pygame program')
 
-    run(screen)
-
-
-def run(screen):
-
     game_loop.start(screen)
 
     # Event loop

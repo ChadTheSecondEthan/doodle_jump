@@ -1,4 +1,4 @@
-from random import random, choice
+from random import random
 from enum import Enum
 
 import entity
@@ -16,18 +16,27 @@ class FloorType(Enum):
     MOVING = 0
     NORMAL = 1
     BOUNCY = 2
+    BREAKING = 3
+    CLOUD = 4
+    MOVING_CLOUD = 5
 
 
 floor_types_list = list(FloorType)
 floors = {
     FloorType.NORMAL: lambda x, y: Floor(x, y),
     FloorType.MOVING: lambda x, y: MovingFloor(x, y),
-    FloorType.BOUNCY: lambda x, y: BouncyFloor(x, y)
+    FloorType.BOUNCY: lambda x, y: BouncyFloor(x, y),
+    FloorType.BREAKING: lambda x, y: BreakingFloor(x, y),
+    FloorType.CLOUD: lambda x, y: CloudFloor(x, y),
+    FloorType.MOVING_CLOUD: lambda x, y: MovingCloudFloor(x, y)
 }
 floor_odds = {
-    FloorType.NORMAL: 0.7,
-    FloorType.MOVING: 0.2,
-    FloorType.BOUNCY: 0.1
+    FloorType.NORMAL: 10,
+    FloorType.MOVING: 2,
+    FloorType.BOUNCY: 1,
+    FloorType.BREAKING: 1,
+    FloorType.CLOUD: 0.5,
+    FloorType.MOVING_CLOUD: 0.1
 }
 
 
@@ -71,8 +80,31 @@ class BouncyFloor(Floor):
         player.vy = Y_SPEED * 3
 
 
+class BreakingFloor(Floor):
+
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.set_color(variables.BROWN)
+
+    def player_bounce(self, player):
+        super().player_bounce(player)
+        game_loop.floors.remove(self)
+
+
+class CloudFloor(Floor):
+
+    def player_bounce(self, player):
+        pass
+
+
+class MovingCloudFloor(MovingFloor):
+
+    def player_bounce(self, player):
+        pass
+
+
 def random_floor_type():
-    num = random()
+    num = random() * sum(floor_odds.values())
     cur_value = 0
     for key, value in floor_odds.items():
         cur_value += value
@@ -80,7 +112,7 @@ def random_floor_type():
             return key
 
 
-def spawn_floor(bounds: (float, float, float, float), _type=FloorType.NORMAL):
+def spawn_floor(bounds, _type=FloorType.NORMAL):
     x = random() * (bounds[1] - bounds[0] - W) + bounds[0]
     y = random() * (bounds[3] - bounds[2] - H) + bounds[2]
     return floors[_type](x, y)

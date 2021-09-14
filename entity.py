@@ -1,3 +1,4 @@
+import math
 import pygame
 
 import game_loop
@@ -17,7 +18,7 @@ class Entity:
         self.w = w
         self.h = h
         self.img = pygame.Surface((w, h)).convert()
-        self.img.fill(variables.WHITE)
+        self.set_color(variables.WHITE)
 
     def set_color(self, color):
         self.img.fill(color)
@@ -31,3 +32,6 @@ class Entity:
 
     def sqr_dist(self, other):
         return (other.x - self.x) ** 2 + (other.y - self.y) ** 2
+
+    def distance(self, other):
+        return math.sqrt(self.sqr_dist(other))
